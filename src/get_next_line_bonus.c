@@ -6,7 +6,7 @@
 /*   By: lvan-gef <lvan-gef@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2023/01/20 14:27:07 by lvan-gef      #+#    #+#                 */
-/*   Updated: 2024/05/05 01:14:55 by lvan-gef      ########   odam.nl         */
+/*   Updated: 2024/05/05 01:35:58 by lvan-gef      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,12 +20,12 @@ static	char	*new_buffer(char *buffer, size_t start_pos)
 
 	if (!buffer)
 		return (NULL);
-	new_len = str_len(buffer) - start_pos;
+	new_len = gnl_str_len(buffer) - start_pos;
 	if (new_len == 0)
-		return (free_me(NULL, buffer));
-	new_buf = ft_calloc(new_len, sizeof(char));
+		return (gnl_free(NULL, buffer));
+	new_buf = gnl_calloc(new_len, sizeof(char));
 	if (!new_buf)
-		return (free_me(NULL, buffer));
+		return (gnl_free(NULL, buffer));
 	i = 0;
 	while (buffer[start_pos])
 	{
@@ -33,7 +33,7 @@ static	char	*new_buffer(char *buffer, size_t start_pos)
 		i++;
 		start_pos++;
 	}
-	free_me(NULL, buffer);
+	gnl_free(NULL, buffer);
 	return (new_buf);
 }
 
@@ -44,14 +44,14 @@ static	char	*append_buffer(char *buffer, char *str)
 
 	if (!buffer && !str)
 		return (NULL);
-	new_len = str_len(buffer) + str_len(str);
+	new_len = gnl_str_len(buffer) + gnl_str_len(str);
 	if (new_len == 0)
-		return (free_me(buffer, str));
-	new_buf = ft_calloc(new_len, sizeof(char));
+		return (gnl_free(buffer, str));
+	new_buf = gnl_calloc(new_len, sizeof(char));
 	if (!new_buf)
-		return (free_me(buffer, str));
-	ft_strjoin(new_buf, buffer, str, new_len);
-	free_me(buffer, str);
+		return (gnl_free(buffer, str));
+	gnl_strjoin(new_buf, buffer, str, new_len);
+	gnl_free(buffer, str);
 	return (new_buf);
 }
 
@@ -62,11 +62,11 @@ static char	*aline(char *buffer, size_t size)
 	if (!buffer)
 		return (NULL);
 	if (size == 0)
-		return (free_me(buffer, NULL));
-	new_line = ft_calloc(size, sizeof(char));
+		return (gnl_free(buffer, NULL));
+	new_line = gnl_calloc(size, sizeof(char));
 	if (!new_line)
 		return (NULL);
-	ft_strjoin(new_line, buffer, NULL, size);
+	gnl_strjoin(new_line, buffer, NULL, size);
 	return (new_line);
 }
 
@@ -79,18 +79,18 @@ static	char	*read_chunk(int fd, char *buffer)
 	newline = 0;
 	while (!newline)
 	{
-		str_chunk = ft_calloc(BUFFER_SIZE, sizeof(char));
+		str_chunk = gnl_calloc(BUFFER_SIZE, sizeof(char));
 		if (!str_chunk)
-			return (free_me(buffer, NULL));
+			return (gnl_free(buffer, NULL));
 		read_size = read(fd, str_chunk, BUFFER_SIZE);
 		if (read_size < 0)
-			return (free_me(buffer, str_chunk));
+			return (gnl_free(buffer, str_chunk));
 		if (read_size == 0)
 		{
-			free_me(NULL, str_chunk);
+			gnl_free(NULL, str_chunk);
 			break ;
 		}
-		newline = is_newline(str_chunk);
+		newline = gnl_is_newline(str_chunk);
 		buffer = append_buffer(buffer, str_chunk);
 	}
 	return (buffer);
@@ -105,17 +105,17 @@ char	*get_next_line(int fd)
 	buffer[fd] = read_chunk(fd, buffer[fd]);
 	if (!buffer[fd])
 		return (NULL);
-	newline_pos = is_newline(buffer[fd]);
+	newline_pos = gnl_is_newline(buffer[fd]);
 	if (newline_pos)
 	{
 		line = aline(buffer[fd], newline_pos);
 		if (line)
 			buffer[fd] = new_buffer(buffer[fd], newline_pos);
 		else
-			buffer[fd] = free_me(buffer[fd], NULL);
+			buffer[fd] = gnl_free(buffer[fd], NULL);
 		return (line);
 	}
-	line = aline(buffer[fd], str_len(buffer[fd]));
-	buffer[fd] = free_me(buffer[fd], NULL);
+	line = aline(buffer[fd], gnl_str_len(buffer[fd]));
+	buffer[fd] = gnl_free(buffer[fd], NULL);
 	return (line);
 }

@@ -6,13 +6,13 @@
 /*   By: lvan-gef <lvan-gef@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2023/01/20 14:41:30 by lvan-gef      #+#    #+#                 */
-/*   Updated: 2024/05/05 01:07:10 by lvan-gef      ########   odam.nl         */
+/*   Updated: 2024/05/05 01:33:08 by lvan-gef      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/get_next_line_bonus.h"
 
-char	*free_me(char *buffer, char *str)
+char	*gnl_free(char *buffer, char *str)
 {
 	if (buffer)
 		free(buffer);
@@ -21,7 +21,7 @@ char	*free_me(char *buffer, char *str)
 	return (NULL);
 }
 
-char	*ft_calloc(size_t count, size_t size)
+char	*gnl_calloc(size_t count, size_t size)
 {
 	void	*mem;
 	size_t	new_size;
@@ -35,7 +35,7 @@ char	*ft_calloc(size_t count, size_t size)
 	return (mem);
 }
 
-size_t	is_newline(const char *str)
+size_t	gnl_is_newline(const char *str)
 {
 	size_t	i;
 
@@ -51,7 +51,7 @@ size_t	is_newline(const char *str)
 	return (0);
 }
 
-size_t	str_len(const char *str)
+size_t	gnl_str_len(const char *str)
 {
 	size_t	size;
 
@@ -63,7 +63,7 @@ size_t	str_len(const char *str)
 	return (size);
 }
 
-void	ft_strjoin(char *dst, const char *str1, const char *str2, size_t size)
+void	gnl_strjoin(char *dst, const char *str1, const char *str2, size_t size)
 {
 	size_t	dst_i;
 	size_t	src_i;
