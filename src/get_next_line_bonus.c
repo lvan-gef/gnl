@@ -6,7 +6,7 @@
 /*   By: lvan-gef <lvan-gef@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2023/01/20 14:27:07 by lvan-gef      #+#    #+#                 */
-/*   Updated: 2024/05/05 01:05:07 by lvan-gef      ########   odam.nl         */
+/*   Updated: 2024/05/05 01:14:55 by lvan-gef      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,7 @@ static	char	*read_chunk(int fd, char *buffer)
 
 char	*get_next_line(int fd)
 {
-	static char		*buffer[OPEN_MAX];
+	static char		*buffer[1024];
 	char			*line;
 	size_t			newline_pos;
 
