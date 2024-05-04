@@ -6,7 +6,7 @@
 /*   By: lvan-gef <lvan-gef@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2023/02/01 22:19:11 by lvan-gef      #+#    #+#                 */
-/*   Updated: 2024/05/05 01:02:08 by lvan-gef      ########   odam.nl         */
+/*   Updated: 2024/05/05 01:07:56 by lvan-gef      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ char	*get_next_line(int fd);
 // src/get_next_line_utils.c
 char	*free_me(char *buffer, char *str);
 char	*ft_calloc(size_t count, size_t size);
-size_t	is_newline(char *str);
-size_t	str_len(char *str);
+size_t	is_newline(const char *str);
+size_t	str_len(const char *str);
 void	ft_strjoin(char *dst, const char *str1, const char *str2, size_t size);
 #endif

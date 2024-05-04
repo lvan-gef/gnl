@@ -6,7 +6,7 @@
 /*   By: lvan-gef <lvan-gef@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2023/01/20 14:41:30 by lvan-gef      #+#    #+#                 */
-/*   Updated: 2024/05/05 00:54:18 by lvan-gef      ########   odam.nl         */
+/*   Updated: 2024/05/05 01:07:37 by lvan-gef      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ char	*ft_calloc(size_t count, size_t size)
 	return (mem);
 }
 
-size_t	is_newline(char *str)
+size_t	is_newline(const char *str)
 {
 	size_t	i;
 
@@ -51,7 +51,7 @@ size_t	is_newline(char *str)
 	return (0);
 }
 
-size_t	str_len(char *str)
+size_t	str_len(const char *str)
 {
 	size_t	size;
 
