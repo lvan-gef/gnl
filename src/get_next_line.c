@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   get_next_line_bonus.c                              :+:    :+:            */
+/*   get_next_line.c                                    :+:    :+:            */
 /*                                                     +:+                    */
-/*   By: lvan-gef <marvin@codam.nl>                   +#+                     */
+/*   By: lvan-gef <lvan-gef@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2023/01/20 14:27:07 by lvan-gef      #+#    #+#                 */
-/*   Updated: 2023/02/01 22:21:26 by lvan-gef      ########   odam.nl         */
+/*   Updated: 2024/05/05 00:53:43 by lvan-gef      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "../include/get_next_line.h"
 
 static	char	*new_buffer(char *buffer, size_t start_pos)
 {

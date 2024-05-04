@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   get_next_line_utils_bonus.c                        :+:    :+:            */
+/*   get_next_line_utils.c                              :+:    :+:            */
 /*                                                     +:+                    */
-/*   By: lvan-gef <marvin@codam.nl>                   +#+                     */
+/*   By: lvan-gef <lvan-gef@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2023/01/20 14:41:30 by lvan-gef      #+#    #+#                 */
-/*   Updated: 2023/02/01 22:24:58 by lvan-gef      ########   odam.nl         */
+/*   Updated: 2024/05/05 00:54:18 by lvan-gef      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "../include/get_next_line.h"
 
 char	*free_me(char *buffer, char *str)
 {

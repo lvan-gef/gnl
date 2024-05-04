@@ -1,25 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   get_next_line.h                                    :+:    :+:            */
+/*   get_next_line_bonus.h                              :+:    :+:            */
 /*                                                     +:+                    */
-/*   By: lvan-gef <marvin@codam.nl>                   +#+                     */
+/*   By: lvan-gef <lvan-gef@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2023/02/01 22:19:11 by lvan-gef      #+#    #+#                 */
-/*   Updated: 2023/02/07 20:03:03 by lvan-gef      ########   odam.nl         */
+/*   Updated: 2024/05/05 01:02:08 by lvan-gef      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef GET_NEXT_LINE_H
-# define GET_NEXT_LINE_H
+#ifndef GET_NEXT_LINE_BONUS_H
+# define GET_NEXT_LINE_BONUS_H
 # include <unistd.h>
 # include <stdlib.h>
+# include <limits.h>
 
 # ifndef BUFFER_SIZE
-#  define BUFFER_SIZE 42
+#  define BUFFER_SIZE 1024
 # endif
 
+// src/get_next_line.c
 char	*get_next_line(int fd);
+
+// src/get_next_line_utils.c
 char	*free_me(char *buffer, char *str);
 char	*ft_calloc(size_t count, size_t size);
 size_t	is_newline(char *str);

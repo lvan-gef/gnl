@@ -3,14 +3,14 @@
 /*                                                        ::::::::            */
 /*   get_next_line_utils_bonus.c                        :+:    :+:            */
 /*                                                     +:+                    */
-/*   By: lvan-gef <marvin@codam.nl>                   +#+                     */
+/*   By: lvan-gef <lvan-gef@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2023/01/20 14:41:30 by lvan-gef      #+#    #+#                 */
-/*   Updated: 2023/02/07 19:38:47 by lvan-gef      ########   odam.nl         */
+/*   Updated: 2024/05/05 00:56:30 by lvan-gef      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line_bonus.h"
+#include "../include/get_next_line_bonus.h"
 
 char	*free_me(char *buffer, char *str)
 {
