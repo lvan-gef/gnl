@@ -6,7 +6,7 @@
 /*   By: lvan-gef <lvan-gef@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2023/01/20 14:27:07 by lvan-gef      #+#    #+#                 */
-/*   Updated: 2024/05/05 00:55:51 by lvan-gef      ########   odam.nl         */
+/*   Updated: 2024/05/05 01:05:07 by lvan-gef      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ static	char	*new_buffer(char *buffer, size_t start_pos)
 	if (!buffer)
 		return (NULL);
 	new_len = str_len(buffer) - start_pos;
-	if (new_len <= 0)
+	if (new_len == 0)
 		return (free_me(NULL, buffer));
 	new_buf = ft_calloc(new_len, sizeof(char));
 	if (!new_buf)
@@ -45,7 +45,7 @@ static	char	*append_buffer(char *buffer, char *str)
 	if (!buffer && !str)
 		return (NULL);
 	new_len = str_len(buffer) + str_len(str);
-	if (new_len <= 0)
+	if (new_len == 0)
 		return (free_me(buffer, str));
 	new_buf = ft_calloc(new_len, sizeof(char));
 	if (!new_buf)
@@ -61,7 +61,7 @@ static char	*aline(char *buffer, size_t size)
 
 	if (!buffer)
 		return (NULL);
-	if (size <= 0)
+	if (size == 0)
 		return (free_me(buffer, NULL));
 	new_line = ft_calloc(size, sizeof(char));
 	if (!new_line)
