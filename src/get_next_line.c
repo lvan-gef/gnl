@@ -94,8 +94,11 @@ static void gnl_free(t_gnl *gnl) {
 
     if (gnl->buf) {
         free(gnl->buf);
-        return;
+        gnl->buf = NULL;
     }
+
+    gnl->buf_cap = 0;
+    gnl->buf_len = 0;
 }
 
 static char *new_line(t_gnl *gnl) {
