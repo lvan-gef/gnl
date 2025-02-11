@@ -1,7 +1,5 @@
 .cache/
 obj/
 
-.clang-format
-.clang-tidy
 compile_commands.json
 gnl.a
