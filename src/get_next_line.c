@@ -20,7 +20,7 @@
 
 static char *read_chunk(t_gnl *gnl);
 static void gnl_free(t_gnl *gnl);
-static char *new_line(t_gnl *gnl);
+static char *aline(t_gnl *gnl);
 static ssize_t find_new_line(t_gnl *gnl);
 
 char *get_next_line(int fd) {
@@ -66,17 +66,32 @@ static char *read_chunk(t_gnl *gnl) {
 
     char *line = NULL;
     while (true) {
-        ssize_t read_size = read(gnl->fd, gnl->buf, BUF_SIZE);
+        if (gnl->buf_len + BUF_SIZE > gnl->buf_cap) {
+            size_t new_cap = gnl->buf_cap + BUF_SIZE;
+
+            char *new_buf = realloc(gnl->buf, new_cap + 1);
+            if (new_buf == NULL) {
+                perror("realloc buf");
+                gnl_free(gnl);
+                return NULL;
+            }
+
+            free(gnl->buf);
+            gnl->buf = new_buf;
+            gnl->buf_cap = new_cap;
+        }
+
+        ssize_t read_size = read(gnl->fd, gnl->buf + gnl->buf_len, BUF_SIZE);
         if (read_size < 0) {
             perror("read");
             gnl_free(gnl);
             return NULL;
         } else if (read_size == 0) {
-            return new_line(gnl);
+            return aline(gnl);  // is wrong if there is no newline
         }
 
         gnl->buf_len += (size_t)read_size;
-        line = new_line(gnl);
+        line = aline(gnl);
         if (errno != 0) {
             return line;
         } else if (line) {
@@ -101,7 +116,7 @@ static void gnl_free(t_gnl *gnl) {
     gnl->buf_len = 0;
 }
 
-static char *new_line(t_gnl *gnl) {
+static char *aline(t_gnl *gnl) {
     ssize_t new_line_pos = find_new_line(gnl);
 
     if (new_line_pos == -1) {
@@ -118,18 +133,20 @@ static char *new_line(t_gnl *gnl) {
 
 static ssize_t find_new_line(t_gnl *gnl) {
     ssize_t new_line_pos = -1;
-    size_t index = 0;
+    if (gnl == NULL || gnl->buf) {
+        return new_line_pos;
+    }
 
-    while (index < gnl->buf_len && gnl->buf[index] != '\0') {
+    size_t index = 0;
+    while (index < gnl->buf_len && index < gnl->buf_cap &&
+           gnl->buf[index] != '\0') {
         if (gnl->buf[index] == '\r') {
             if (index + 1 < gnl->buf_len) {
-                index++;
-
                 if (index + 1 == '\n') {
                     return (ssize_t)index;
                 }
             }
-        } else if (gnl->buf[index]) {
+        } else if (gnl->buf[index] == '\n') {
             return (ssize_t)index;
         }
 
