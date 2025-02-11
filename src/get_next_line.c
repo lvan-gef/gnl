@@ -6,7 +6,7 @@
 /*   By: lvan-gef <lvan-gef@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2025/02/11 20:31:49 by lvan-gef      #+#    #+#                 */
-/*   Updated: 2025/02/11 23:06:23 by lvan-gef      ########   odam.nl         */
+/*   Updated: 2025/02/12 00:21:05 by lvan-gef      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,7 @@ static char *read_chunk(t_gnl *gnl) {
             gnl_free(gnl);
             return NULL;
         } else if (read_size == 0) {
-            return aline(gnl);  // is wrong if there is no newline
+            return aline(gnl); // is wrong if there is no newline
         }
 
         gnl->buf_len += (size_t)read_size;
@@ -141,7 +141,7 @@ static ssize_t find_new_line(t_gnl *gnl) {
     while (index < gnl->buf_len && index < gnl->buf_cap &&
            gnl->buf[index] != '\0') {
         if (gnl->buf[index] == '\r') {
-            if (index + 1 < gnl->buf_len) {
+            if (index + 1 < gnl->buf_len && index + 1 < gnl->buf_cap) {
                 if (index + 1 == '\n') {
                     return (ssize_t)index;
                 }
