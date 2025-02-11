@@ -4,8 +4,16 @@ NAME := gnl.a
 # Compiler and flags
 CC        := clang
 CFLAGS    := -Wall -Wextra -Werror -Wshadow -Wpedantic -Wconversion -Wdouble-promotion -std=c17
-DEBUGFLAG := -g3 -fno-omit-frame-pointer
 DEPSFLAGS := -MMD -MP
+
+# Compilation mode (default: release)
+MODE ?= release
+
+ifeq ($(MODE),debug)
+    CFLAGS += -g3 -fno-omit-frame-pointer
+else ifeq ($(MODE),release)
+    CFLAGS += -O2
+endif
 
 # Directories
 SRCDIR := src
@@ -20,7 +28,8 @@ DEPS   := $(SRCOBJ:.o=.d)
 HEADERS := -I include
 
 # Archive command
-LIB := ar rcs
+AR := ar
+ARFLAGS := rcs
 
 # Colors for status messages
 BLUE := \033[36m
@@ -31,8 +40,8 @@ NC   := \033[0m
 all: $(NAME)  ## Build the library (default)
 
 .PHONY: debug
-debug: CFLAGS += $(DEBUGFLAG)  ## Build with debug flags
-debug: $(NAME)
+debug: MODE = debug
+debug: $(NAME)  ## Build in debug mode
 
 .PHONY: clean
 clean:  ## Clean object files
@@ -40,12 +49,22 @@ clean:  ## Clean object files
 	@echo "Cleaned object files"
 
 .PHONY: fclean
-fclean: clean  ## Clean object files and library
+fclean: clean  ## Clean everything
 	@rm -f $(NAME)
 	@echo "Cleaned everything"
 
 .PHONY: re
-re: fclean all  ## Clean all and rebuild
+re: fclean all  ## Rebuild everything
+
+# .PHONY: test
+# test: $(NAME)
+# 	@echo "Running tests..."
+# 	@./run_tests.sh
+
+.PHONY: format
+format:  ## Format code via clang-format
+	clang-format -i $(SRCFILES) include/*.h
+	@echo "Code formatted!"
 
 .PHONY: help
 help:  ## Display this help message
@@ -55,7 +74,7 @@ help:  ## Display this help message
 
 # Build library
 $(NAME): $(SRCOBJ)
-	$(LIB) $@ $(SRCOBJ)
+	$(AR) $(ARFLAGS) $@ $(SRCOBJ)
 	@echo "Library: '$(NAME)' built successfully"
 
 # Rule for compiling source files into object files
@@ -69,4 +88,3 @@ $(OBJDIR):
 
 # Include dependency files
 -include $(DEPS)
-
