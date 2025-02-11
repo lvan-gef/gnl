@@ -66,6 +66,13 @@ format:  ## Format code via clang-format
 	clang-format -i $(SRCFILES) include/*.h
 	@echo "Code formatted!"
 
+.PHONY: compdb
+compdb: clean  ## Generate compile_commands.json using Bear
+	@rm -f compile_commands.json
+	@echo "Running Bear with make -j$(shell nproc)"
+	bear -- make -j$(shell nproc)
+	@echo "Generated compile_commands.json"
+
 .PHONY: help
 help:  ## Display this help message
 	@echo 'Usage: make $(BLUE)<target>$(NC)'
