@@ -16,7 +16,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "../include/get_next_line.h"
+#include "../include/gnl.h"
+#include "../include/gnl_utils.h"
 
 static char *read_chunk(t_gnl *gnl);
 static void gnl_free(t_gnl *gnl);
@@ -59,9 +60,9 @@ static char *read_chunk(t_gnl *gnl) {
             perror("buf");
             gnl_free(gnl);
             return NULL;
-        } else {
-            gnl->buf_cap = BUF_SIZE;
         }
+
+        gnl->buf_cap = BUF_SIZE;
     }
 
     char *line = NULL;
@@ -76,7 +77,7 @@ static char *read_chunk(t_gnl *gnl) {
                 return NULL;
             }
 
-            free(gnl->buf);
+            /*free(gnl->buf);*/
             gnl->buf = new_buf;
             gnl->buf_cap = new_cap;
         }
@@ -94,7 +95,7 @@ static char *read_chunk(t_gnl *gnl) {
         line = aline(gnl);
         if (errno != 0) {
             return line;
-        } else if (line) {
+        } else if (line != NULL) {
             return line;
         }
     }
@@ -119,21 +120,34 @@ static void gnl_free(t_gnl *gnl) {
 static char *aline(t_gnl *gnl) {
     ssize_t new_line_pos = find_new_line(gnl);
 
-    if (new_line_pos == -1) {
+    if (new_line_pos < 1) {
         return NULL;
     }
 
-    // calloc space till newline
-    // copy it over from buf to line
-    // then move everything after newline over in the buffer to the beginning
-    // update buf_len
+    char *line = calloc((size_t)new_line_pos + 1, sizeof(char));
+    if (line == NULL) {
+        perror("calloc");
+        return NULL;
+    }
 
-    return NULL;
+    gnl_strlcpy(line, gnl->buf, (size_t)new_line_pos + 1);
+
+    size_t index = (size_t)new_line_pos + 1;  // step over newline for copy
+    size_t new_index = 0;
+    while (index < gnl->buf_len) {
+        gnl->buf[new_index] = gnl->buf[index];
+        gnl->buf[index] = '\0';
+        ++index;
+        ++new_index;
+    }
+
+    gnl->buf_len = new_index;
+    return line;
 }
 
 static ssize_t find_new_line(t_gnl *gnl) {
     ssize_t new_line_pos = -1;
-    if (gnl == NULL || gnl->buf) {
+    if (gnl == NULL || gnl->buf == NULL) {
         return new_line_pos;
     }
 
@@ -141,8 +155,10 @@ static ssize_t find_new_line(t_gnl *gnl) {
     while (index < gnl->buf_len && index < gnl->buf_cap &&
            gnl->buf[index] != '\0') {
         if (gnl->buf[index] == '\r') {
-            if (index + 1 < gnl->buf_len && index + 1 < gnl->buf_cap) {
-                if (index + 1 == '\n') {
+            ++index;
+
+            if (index < gnl->buf_len && index < gnl->buf_cap) {
+                if (index == '\n') {
                     return (ssize_t)index;
                 }
             }
@@ -150,7 +166,7 @@ static ssize_t find_new_line(t_gnl *gnl) {
             return (ssize_t)index;
         }
 
-        index++;
+        ++index;
     }
 
     return new_line_pos;

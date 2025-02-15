@@ -10,8 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef GET_NEXT_LINE_H
-#define GET_NEXT_LINE_H
+#pragma once
 
 #include <unistd.h>
 
@@ -27,5 +26,3 @@ typedef struct s_gnl {
 } t_gnl;
 
 char *get_next_line(int fd);
-
-#endif // GET_NEXT_LINE_H
