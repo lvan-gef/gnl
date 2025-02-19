@@ -6,7 +6,7 @@
 /*   By: lvan-gef <lvan-gef@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2025/02/11 20:31:49 by lvan-gef      #+#    #+#                 */
-/*   Updated: 2025/02/19 15:45:00 by lvan-gef      ########   odam.nl         */
+/*   Updated: 2025/02/19 15:51:19 by lvan-gef      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,6 @@
 #include <unistd.h>
 
 #include "../include/gnl.h"
-#include "../include/gnl_utils.h"
 
 static char *read_chunk(t_gnl *gnl);
 static void gnl_free(t_gnl *gnl);
@@ -88,14 +87,7 @@ static char *read_chunk(t_gnl *gnl) {
 
         if (read_size == 0) {
             if (gnl->buf_len > 0) {
-                line = calloc(gnl->buf_len + 1, sizeof(char));
-                if (line == NULL) {
-                    perror("calloc line");
-                    gnl_free(gnl);
-                    return NULL;
-                }
-                gnl_strlcpy(line, gnl->buf, gnl->buf_len + 1);
-                gnl->buf_len = 0;
+                line = extract_line(gnl);
                 return line;
             }
             return NULL;
@@ -139,7 +131,7 @@ static char *extract_line(t_gnl *gnl) {
         return NULL;
     }
 
-    for (ssize_t i = 0; i <= nl_pos; i++) {
+    for (ssize_t i = 0; i <= nl_pos; ++i) {
         line[i] = gnl->buf[i];
     }
     line[nl_pos + 1] = '\0';
@@ -161,14 +153,14 @@ static ssize_t find_new_line(t_gnl *gnl) {
         return -1;
     }
 
-    for (size_t i = 0; i < gnl->buf_len; i++) {
+    for (size_t i = 0; i < gnl->buf_len; ++i) {
         if (gnl->buf[i] == '\n') {
             return (ssize_t)i;
         }
 
         if (gnl->buf[i] == '\r' && i + 1 < gnl->buf_len &&
             gnl->buf[i + 1] == '\n') {
-            return (ssize_t)i;
+            return (ssize_t)i + 1;
         }
     }
 

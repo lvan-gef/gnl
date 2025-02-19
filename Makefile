@@ -18,7 +18,7 @@ endif
 # Directories
 SRCDIR := src
 OBJDIR := obj
-SRCFILES := $(SRCDIR)/gnl.c $(SRCDIR)/gnl_utils.c
+SRCFILES := $(SRCDIR)/gnl.c
 
 # Object files and dependencies
 SRCOBJ := $(patsubst $(SRCDIR)/%.c,$(OBJDIR)/%.o,$(SRCFILES))
