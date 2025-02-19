@@ -6,7 +6,7 @@
 /*   By: lvan-gef <lvan-gef@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2025/02/11 20:31:49 by lvan-gef      #+#    #+#                 */
-/*   Updated: 2025/02/19 15:51:19 by lvan-gef      ########   odam.nl         */
+/*   Updated: 2025/02/19 16:18:55 by lvan-gef      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,8 +88,10 @@ static char *read_chunk(t_gnl *gnl) {
         if (read_size == 0) {
             if (gnl->buf_len > 0) {
                 line = extract_line(gnl);
+                gnl_free(gnl);
                 return line;
             }
+            gnl_free(gnl);
             return NULL;
         }
 
