@@ -6,7 +6,7 @@
 /*   By: lvan-gef <lvan-gef@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2025/02/11 20:31:49 by lvan-gef      #+#    #+#                 */
-/*   Updated: 2025/02/19 15:34:12 by lvan-gef      ########   odam.nl         */
+/*   Updated: 2025/02/19 15:45:00 by lvan-gef      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -166,7 +166,8 @@ static ssize_t find_new_line(t_gnl *gnl) {
             return (ssize_t)i;
         }
 
-        if (gnl->buf[i] == '\r' && i + 1 < gnl->buf_len && gnl->buf[i + 1] == '\n') {
+        if (gnl->buf[i] == '\r' && i + 1 < gnl->buf_len &&
+            gnl->buf[i + 1] == '\n') {
             return (ssize_t)i;
         }
     }
