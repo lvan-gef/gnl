@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   get_next_line.c                                    :+:    :+:            */
+/*   gnl.c                                              :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: lvan-gef <lvan-gef@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2025/02/11 20:31:49 by lvan-gef      #+#    #+#                 */
-/*   Updated: 2025/02/12 00:21:05 by lvan-gef      ########   odam.nl         */
+/*   Updated: 2025/02/19 15:34:12 by lvan-gef      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 
 #include "../include/gnl.h"
@@ -21,7 +22,7 @@
 
 static char *read_chunk(t_gnl *gnl);
 static void gnl_free(t_gnl *gnl);
-static char *aline(t_gnl *gnl);
+static char *extract_line(t_gnl *gnl);
 static ssize_t find_new_line(t_gnl *gnl);
 
 char *get_next_line(int fd) {
@@ -42,12 +43,9 @@ char *get_next_line(int fd) {
 
     gnl.fd = fd;
     line = read_chunk(&gnl);
-    if (errno != 0) {
-        return line;
-    }
 
-    if (line == NULL) {
-        return gnl.buf;
+    if (line == NULL && gnl.buf_len == 0) {
+        gnl_free(&gnl);
     }
 
     return line;
@@ -55,29 +53,28 @@ char *get_next_line(int fd) {
 
 static char *read_chunk(t_gnl *gnl) {
     if (gnl->buf_cap == 0) {
-        gnl->buf = calloc(BUF_SIZE + 1, sizeof(*gnl->buf));
+        gnl->buf = calloc(BUF_SIZE + 1, sizeof(char));
         if (gnl->buf == NULL) {
-            perror("buf");
-            gnl_free(gnl);
+            perror("calloc buffer");
             return NULL;
         }
-
         gnl->buf_cap = BUF_SIZE;
     }
 
-    char *line = NULL;
+    char *line = extract_line(gnl);
+    if (line != NULL || errno != 0) {
+        return line;
+    }
+
     while (true) {
         if (gnl->buf_len + BUF_SIZE > gnl->buf_cap) {
             size_t new_cap = gnl->buf_cap + BUF_SIZE;
-
             char *new_buf = realloc(gnl->buf, new_cap + 1);
             if (new_buf == NULL) {
-                perror("realloc buf");
+                perror("realloc buffer");
                 gnl_free(gnl);
                 return NULL;
             }
-
-            /*free(gnl->buf);*/
             gnl->buf = new_buf;
             gnl->buf_cap = new_cap;
         }
@@ -87,20 +84,31 @@ static char *read_chunk(t_gnl *gnl) {
             perror("read");
             gnl_free(gnl);
             return NULL;
-        } else if (read_size == 0) {
-            return aline(gnl); // is wrong if there is no newline
+        }
+
+        if (read_size == 0) {
+            if (gnl->buf_len > 0) {
+                line = calloc(gnl->buf_len + 1, sizeof(char));
+                if (line == NULL) {
+                    perror("calloc line");
+                    gnl_free(gnl);
+                    return NULL;
+                }
+                gnl_strlcpy(line, gnl->buf, gnl->buf_len + 1);
+                gnl->buf_len = 0;
+                return line;
+            }
+            return NULL;
         }
 
         gnl->buf_len += (size_t)read_size;
-        line = aline(gnl);
-        if (errno != 0) {
-            return line;
-        } else if (line != NULL) {
+        gnl->buf[gnl->buf_len] = '\0';
+
+        line = extract_line(gnl);
+        if (line != NULL || errno != 0) {
             return line;
         }
     }
-
-    return NULL; // should never get here?
 }
 
 static void gnl_free(t_gnl *gnl) {
@@ -108,7 +116,7 @@ static void gnl_free(t_gnl *gnl) {
         return;
     }
 
-    if (gnl->buf) {
+    if (gnl->buf != NULL) {
         free(gnl->buf);
         gnl->buf = NULL;
     }
@@ -117,57 +125,51 @@ static void gnl_free(t_gnl *gnl) {
     gnl->buf_len = 0;
 }
 
-static char *aline(t_gnl *gnl) {
-    ssize_t new_line_pos = find_new_line(gnl);
+static char *extract_line(t_gnl *gnl) {
+    ssize_t nl_pos = find_new_line(gnl);
 
-    if (new_line_pos < 1) {
+    if (nl_pos < 0) {
         return NULL;
     }
 
-    char *line = calloc((size_t)new_line_pos + 1, sizeof(char));
+    char *line = calloc((size_t)nl_pos + 2, sizeof(char));
     if (line == NULL) {
-        perror("calloc");
+        perror("calloc line");
+        errno = ENOMEM;
         return NULL;
     }
 
-    gnl_strlcpy(line, gnl->buf, (size_t)new_line_pos + 1);
-
-    size_t index = (size_t)new_line_pos + 1;  // step over newline for copy
-    size_t new_index = 0;
-    while (index < gnl->buf_len) {
-        gnl->buf[new_index] = gnl->buf[index];
-        gnl->buf[index] = '\0';
-        ++index;
-        ++new_index;
+    for (ssize_t i = 0; i <= nl_pos; i++) {
+        line[i] = gnl->buf[i];
     }
+    line[nl_pos + 1] = '\0';
 
-    gnl->buf_len = new_index;
+    size_t remaining = gnl->buf_len - ((size_t)nl_pos + 1);
+    if (remaining > 0) {
+        memmove(gnl->buf, gnl->buf + nl_pos + 1, remaining);
+        gnl->buf_len = remaining;
+    } else {
+        gnl->buf_len = 0;
+    }
+    gnl->buf[gnl->buf_len] = '\0';
+
     return line;
 }
 
 static ssize_t find_new_line(t_gnl *gnl) {
-    ssize_t new_line_pos = -1;
-    if (gnl == NULL || gnl->buf == NULL) {
-        return new_line_pos;
+    if (gnl == NULL || gnl->buf == NULL || gnl->buf_len == 0) {
+        return -1;
     }
 
-    size_t index = 0;
-    while (index < gnl->buf_len && index < gnl->buf_cap &&
-           gnl->buf[index] != '\0') {
-        if (gnl->buf[index] == '\r') {
-            ++index;
-
-            if (index < gnl->buf_len && index < gnl->buf_cap) {
-                if (index == '\n') {
-                    return (ssize_t)index;
-                }
-            }
-        } else if (gnl->buf[index] == '\n') {
-            return (ssize_t)index;
+    for (size_t i = 0; i < gnl->buf_len; i++) {
+        if (gnl->buf[i] == '\n') {
+            return (ssize_t)i;
         }
 
-        ++index;
+        if (gnl->buf[i] == '\r' && i + 1 < gnl->buf_len && gnl->buf[i + 1] == '\n') {
+            return (ssize_t)i;
+        }
     }
 
-    return new_line_pos;
+    return -1;
 }

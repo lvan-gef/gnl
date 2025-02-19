@@ -56,11 +56,6 @@ fclean: clean  ## Clean everything
 .PHONY: re
 re: fclean all  ## Rebuild everything
 
-# .PHONY: test
-# test: $(NAME)
-# 	@echo "Running tests..."
-# 	@./run_tests.sh
-
 .PHONY: format
 format:  ## Format code via clang-format
 	clang-format -i $(SRCFILES) include/*.h
